@@ -1,12 +1,13 @@
 <!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
 <title>Test 1</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.14.1/css/ol.css" type="text/css">
 </head>
 <body>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
-
+<script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.14.1/build/ol.js"></script>
 <div class="text-center">
   <h1>Test 1</h1>
   <p>Das ist die erste Azure Static Web App.</p>
@@ -14,14 +15,19 @@
     latitude <input id="lat" type="text" readonly /><br />
     longitude <input id="lon" type="text" readonly />
   </p>
+  <p>
+    <div id="map" class="map" style="height: 300px"></div>
+  </p>
 </div>
 
 <script>
   const showGeolocation = (geoloc) => {
-    console.log(geoloc);
+    // console.log(geoloc);
     if (geoloc && geoloc.coords) {
       document.getElementById('lat').value = geoloc.coords.latitude;
       document.getElementById('lon').value = geoloc.coords.longitude;
+
+      createMap(geoloc.coords.longitude, geoloc.coords.latitude);
     }
   }
 
@@ -29,7 +35,27 @@
     console.log('Fehler - keine Position');
   }
 
+  let map = null;
+  let view = null;
+
+  const createMap = (lon, lat) => {
+    view = new ol.View({
+      center: ol.proj.fromLonLat([lon, lat]),
+      zoom: 15
+    });
+    map = new ol.Map({
+      target: 'map',
+      layers: [
+        new ol.layer.Tile({
+          source: new ol.source.OSM()
+        })
+      ],
+      view: view
+    });
+  }
+
   navigator.geolocation.getCurrentPosition(showGeolocation, showError);
+
 </script>
 </body>
 </html>
